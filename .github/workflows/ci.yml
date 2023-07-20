@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+    - name: create Virtual env
+      run: make venv_create
+    - name: install cookiecutter
+      run: |
+        source .venv/bin/activate
+    - name: run cookiecutter
+      run: |
+        source .venv/bin/activate
+        make install
+    - name: run lint
+      working-directory: ./baking-test
+      run: |
+        source ../.venv/bin/activate
+        make lint
+    - name: run tests
+      working-directory: ./baking-test
+      run: |
+        source ../.venv/bin/activate
+        make test
