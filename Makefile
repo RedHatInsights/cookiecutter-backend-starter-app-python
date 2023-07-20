@@ -18,3 +18,12 @@ ifndef VIRTUAL_ENV
 else
 	$(warning VIRTUAL_ENV variable present, already within a virtual environment?)
 endif
+
+cookie-teardown:
+	-deactivate
+	rm -rf baking-test
+
+cookie-generate:
+	cookiecutter . --no-input -f
+
+cookie-regenerate: cookie-teardown cookie-generate
