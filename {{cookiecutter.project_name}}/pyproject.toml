@@ -5,7 +5,8 @@ version = "0.0.1"
 dependencies = [
     "djangorestframework",
     "markdown",
-    "django-filter"
+    "django-filter",
+    "python-json-logger"
 ]
 
 [project.optional-dependencies]
