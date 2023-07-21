@@ -25,5 +25,8 @@ cookie-teardown:
 
 cookie-generate:
 	cookiecutter . --no-input -f
+	cd baking-test
+	make venv_create
+	source $(VENV)/bin/activate
 
 cookie-regenerate: cookie-teardown cookie-generate

@@ -6,7 +6,7 @@ dependencies = [
     "djangorestframework",
     "markdown",
     "django-filter",
-    "prometheus-client",
+    "django-prometheus",
 ]
 
 [project.optional-dependencies]
