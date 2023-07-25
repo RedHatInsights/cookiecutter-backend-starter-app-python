@@ -25,7 +25,5 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     path('healthz', views.healthz),
-    path('readyz', views.readyz),
-    path('livez', views.livez),
     path('', include(router.urls)),
 ]
