@@ -1,4 +1,4 @@
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 
 
 def healthz(req):
@@ -8,11 +8,3 @@ def healthz(req):
     }
 
     return JsonResponse(health_data)
-
-
-def readyz(req):
-    return HttpResponse('OK')
-
-
-def livez(req):
-    return HttpResponse('OK')
