@@ -17,7 +17,7 @@ from app_common_python import LoadedConfig, isClowderEnabled
 API_PREFIX = "/api/"
 
 if isClowderEnabled():
-    deploy_name = os.environ("APP_NAME"x``)
+    deploy_name = os.environ("APP_NAME")
     for endpoint in LoadedConfig.AppConfig.Endpoints:
         if endpoint.App == deploy_name:
             API_PATH = API_PREFIX + endpoint.ApiPath
