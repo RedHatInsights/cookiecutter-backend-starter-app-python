@@ -5,7 +5,8 @@ version = "0.0.1"
 dependencies = [
     "djangorestframework",
     "markdown",
-    "django-filter"
+    "django-filter",
+    "app-common-python>=0.2.6"
 ]
 
 [project.optional-dependencies]

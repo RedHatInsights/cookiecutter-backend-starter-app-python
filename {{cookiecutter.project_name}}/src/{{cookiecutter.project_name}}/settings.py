@@ -10,7 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+from app_common_python import LoadedConfig, isClowderEnabled
+
+API_PREFIX = "/api/"
+
+if isClowderEnabled():
+    deploy_name = os.environ("APP_NAME"x``)
+    for endpoint in LoadedConfig.AppConfig.Endpoints:
+        if endpoint.App == deploy_name:
+            API_PATH = API_PREFIX + endpoint.ApiPath
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
