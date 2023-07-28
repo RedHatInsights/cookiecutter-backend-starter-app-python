@@ -20,7 +20,7 @@ Once installed, you can generate your new project. You'll be asked the local pro
 repository or not.
 
 ```shell
-$ cookiecutter gh:RedHatInsights/backend-starter-app-python
+$ cookiecutter gh:RedHatInsights/cookiecutter-backend-starter-app-python
 ```
 
 After that you'll see a new local directory has been created with the contents of a new project. We recommend you to move it to a new
