@@ -135,7 +135,7 @@ REST_FRAMEWORK = {
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
         'json': {
             '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
@@ -151,6 +151,10 @@ LOGGING = {
     },
     'loggers': {
         'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+        'django.server': {
             'handlers': ['console'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
         },

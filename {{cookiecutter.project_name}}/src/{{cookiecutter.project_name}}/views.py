@@ -5,7 +5,6 @@ logger = logging.getLogger(__name__)
 
 
 def healthz(req):
-    logger.info("BARP")
     health_data = {
         "app_name": "{{cookiecutter.project_name}}",
         "status": "running",
