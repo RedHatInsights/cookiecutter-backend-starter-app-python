@@ -139,7 +139,7 @@ LOGGING = {
     'formatters': {
         'json': {
             '()': 'pythonjsonlogger.jsonlogger.JsonFormatter',
-            'format': '{levelname} {asctime} {message}',    
+            'format': '{levelname} {asctime} {message}',
             'style': '{',
         },
     },
