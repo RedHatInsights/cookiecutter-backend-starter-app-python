@@ -19,10 +19,10 @@ else
 	$(warning VIRTUAL_ENV variable present, already within a virtual environment?)
 endif
 
-cookie-teardown venv_check:
+cookie-teardown: venv_check
 	-deactivate
 	rm -rf baking-test
-
+	
 cookie-generate:
 	cookiecutter . --no-input -f
 	cd baking-test
