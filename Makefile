@@ -7,7 +7,8 @@ endif
 
 install: venv_check
 	python -m pip install cookiecutter
-	-rm -rf baking-test
+	git config --global user.email "you@example.com"
+	git config --global user.name "Your Name"
 	cookiecutter . --no-input
 
 venv_create:
@@ -18,14 +19,19 @@ else
 	$(warning VIRTUAL_ENV variable present, already within a virtual environment?)
 endif
 
+setup: venv_check
+	python -m pip install cookiecutter
+	-rm -rf baking-test
+	cookiecutter . --no-input
+
 test: venv_check
-	make install
+	make setup
 	cd baking-test && make -f Makefile test
 
 run: venv_check
-	make install
+	make setup
 	cd baking-test && make -f Makefile run
 
 coverage: venv_check
-	make install
+	make setup
 	cd baking-test && make -f Makefile coverage
