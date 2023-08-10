@@ -1,4 +1,7 @@
 from django.http import JsonResponse, HttpResponse
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def healthz(req):
