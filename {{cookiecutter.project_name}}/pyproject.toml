@@ -7,6 +7,7 @@ dependencies = [
     "markdown",
     "django-filter",
     "django-prometheus",
+    "python-json-logger"
 ]
 
 [project.optional-dependencies]
