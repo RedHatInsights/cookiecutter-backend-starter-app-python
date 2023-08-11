@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_prometheus.middleware.PrometheusAfterMiddleware',
+    '{{cookiecutter.project_name}}.middleware.metricsmiddleware.MetricsMiddleware',
 ]
 
 ROOT_URLCONF = '{{cookiecutter.project_name}}.urls'
