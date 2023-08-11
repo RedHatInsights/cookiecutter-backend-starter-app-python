@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'baking-test.middleware.healthcheckmiddleware.HealthCheckMiddleware',
+    '{{cookiecutter.project_name}}.middleware.healthcheckmiddleware.HealthCheckMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
