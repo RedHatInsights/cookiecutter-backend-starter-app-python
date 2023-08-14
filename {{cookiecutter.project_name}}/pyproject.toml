@@ -6,6 +6,7 @@ dependencies = [
     "djangorestframework",
     "markdown",
     "django-filter",
+    "django-prometheus",
     "python-json-logger"
 ]
 

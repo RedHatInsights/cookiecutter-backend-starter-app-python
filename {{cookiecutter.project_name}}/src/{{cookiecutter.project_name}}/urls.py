@@ -28,4 +28,5 @@ urlpatterns = [
     path('readyz', views.readyz),
     path('livez', views.livez),
     path('', include(router.urls)),
+    path('', include('django_prometheus.urls')),
 ]
