@@ -245,3 +245,6 @@ Once you have sourced your virtual environment you can install the pre-commit pa
 $ make install_dev
 ```
 Note: none of the hooks we provide are required but are just our recommendations.
+
+### Configuring Logging
+For logging configuration, we are using the Django's native configuration tools with [python-json-logger](https://github.com/madzak/python-json-logger) to put the logs in JSON format. More information on how to further configure logging can be found [here](https://docs.djangoproject.com/en/4.2/topics/logging/#configuring-logging).
