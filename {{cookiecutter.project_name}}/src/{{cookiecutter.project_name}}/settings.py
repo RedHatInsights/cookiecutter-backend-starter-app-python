@@ -40,10 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_prometheus',
 ]
 
 MIDDLEWARE = [
     '{{cookiecutter.project_name}}.middleware.healthcheckmiddleware.HealthCheckMiddleware',
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -51,6 +53,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
+    '{{cookiecutter.project_name}}.middleware.metricsmiddleware.MetricsMiddleware',
 ]
 
 ROOT_URLCONF = '{{cookiecutter.project_name}}.urls'

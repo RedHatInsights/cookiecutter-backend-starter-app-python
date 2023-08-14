@@ -26,4 +26,5 @@ router = routers.DefaultRouter()
 urlpatterns = [
     path('healthz', views.healthz),
     path('', include(router.urls)),
+    path('', include('django_prometheus.urls')),
 ]
