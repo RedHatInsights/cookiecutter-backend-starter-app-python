@@ -24,14 +24,11 @@ setup: venv_check
 	-rm -rf baking-test
 	cookiecutter . --no-input
 
-test: venv_check
-	make setup
+test: venv_check setup
 	cd baking-test && make -f Makefile test
 
-run: venv_check
-	make setup
+run: venv_check setup
 	cd baking-test && make -f Makefile run
 
-coverage: venv_check
-	make setup
+coverage: venv_check setup
 	cd baking-test && make -f Makefile coverage
