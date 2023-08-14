@@ -1,5 +1,5 @@
 
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 import logging
 
 logger = logging.getLogger(__name__)
