@@ -18,3 +18,17 @@ ifndef VIRTUAL_ENV
 else
 	$(warning VIRTUAL_ENV variable present, already within a virtual environment?)
 endif
+
+setup: venv_check
+	python -m pip install cookiecutter
+	-rm -rf baking-test
+	cookiecutter . --no-input
+
+test: venv_check setup
+	cd baking-test && make -f Makefile test
+
+run: venv_check setup
+	cd baking-test && make -f Makefile run
+
+coverage: venv_check setup
+	cd baking-test && make -f Makefile coverage
