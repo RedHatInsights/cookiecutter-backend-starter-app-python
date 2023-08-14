@@ -249,4 +249,7 @@ Note: none of the hooks we provide are required but are just our recommendations
 ### Configuring Prometheus Metrics
 The Prometheus client is handled by [django-prometheus](https://github.com/korfuri/django-prometheus). This provides the prometheus_client globally so adding metrics is as simple as making new objects to track what you want. Documentation on how to add these metrics can be found [here](https://github.com/prometheus/client_python#instrumenting).
 
-The metrics will appear on `/metrics` endpoint on the same port that Django is running on (default 8000).
+
+### Configuring Logging
+For logging configuration, we are using the Django's native configuration tools with [python-json-logger](https://github.com/madzak/python-json-logger) to put the logs in JSON format. More information on how to further configure logging can be found [here](https://docs.djangoproject.com/en/4.2/topics/logging/#configuring-logging).
+
