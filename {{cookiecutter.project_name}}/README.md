@@ -34,7 +34,7 @@ you'll have to provide a Secret to the ephemeral namespace SA to be able to pull
 Most of the recipes require a Python virtual environment to be active. This is to avoid installing dependencies to your
 local user's namespace.
 
-To create and activate a virtual environment you can use the `create_venv` recipe:
+To create and activate a virtual environment you can use the `venv_create` recipe:
 
 ```shell
 make venv_create && source .venv/bin/activate
@@ -191,7 +191,7 @@ permissions against the target image repository.
 podman login quay.io
 
 # docker
-podman login quay.io
+docker login quay.io
 ```
 
 We should be ready to build and push a container image. The included Makefile has recipes to create and push an image to
