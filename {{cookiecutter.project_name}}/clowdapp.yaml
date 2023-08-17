@@ -30,6 +30,16 @@ objects:
           requests:
             cpu: ${CPU_REQUEST_SERVICE}
             memory: ${MEMORY_REQUEST_SERVICE}
+        livenessProbe:
+          httpGet:
+            path: /livez
+            port: ${WEB_PORT}
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: ${WEB_PORT}
 
 parameters:
 - name: IMAGE_TAG
@@ -46,6 +56,9 @@ parameters:
 - name: APP_NAME
   required: true
   value: {{cookiecutter.project_name | replace("_", "-")}}
+- name: WEB_PORT
+  description: Port this is running on
+  value: 8000
 - name: MEMORY_LIMIT_SERVICE
   value: 512Mi
 - name: MEMORY_REQUEST_SERVICE
