@@ -4,7 +4,7 @@ The purpose of this project is to provide a fully functional implementation of s
 integrated with the console.redhat.com platform, to serve as an example for new teams onboarding into the platform
 to create their own applications.
 
-### Prerequisites
+## Prerequisites
 
 - This project requires Python 3 and Django REST Framework to run. We recommend to use at least Python 3.10, but any
 version 3.6+ will work too. Once you have those all you will want to create and activate a virtual environment for
@@ -17,7 +17,7 @@ the task of installing and running the application.
 [virtual environments](https://docs.python.org/3/library/venv.html), and by default they will check if there is a
 virtual environemnt activated, refusing to run otherwise.
 
-#### **Optional for deploying to ephemeral environments:**
+### **Optional for deploying to ephemeral environments:**
 
 - You need to be onboarded to the Ephemeral cluster to be able to deploy to it. If you're not, please make sure to
 check the documentation
@@ -29,10 +29,10 @@ check the documentation
 * We encourage you to create a public Quay.io repository to host the images. While a private repository will also work,
 you'll have to provide a Secret to the ephemeral namespace SA to be able to pull the image.
 
-### Installing the application
+## Installing the application
 
 Most of the recipes require a Python virtual environment to be active. This is to avoid installing dependencies to your
-local user's namespace. 
+local user's namespace.
 
 To create and activate a virtual environment you can use the `create_venv` recipe:
 
@@ -54,32 +54,9 @@ make install_dev
 
 The next sections will assume you have a virtual environment active
 
-### Running locally
+## Running the tests
 
-To run this project locally simply:
-
-```shell
-make run
-```
-
-After running that command you should see this output:
-
-```shell
-Watching for file changes with StatReloader
-Performing system checks...
-
-System check identified no issues (0 silenced).
-June 14, 2023 - 12:34:18
-Django version 4.2.2, using settings 'backend_starter_app.settings'
-Starting development server at http://127.0.0.1:8000/
-Quit the server with CONTROL-C.
-```
-
-Navigate to http://127.0.0.1:8080 to access to the Django application's web console.
-
-### Running tests
-
-Tests are run using the `test` recipe:
+Tests can be run using the `test` recipe:
 
 ```
 make test
@@ -87,7 +64,7 @@ make test
 
 This would run the tests using the default configured test runner using Django `test` command from `manage.py` script.
 
-#### Generating code coverage
+### Generating code coverage
 
 In case you want to generate an HTML report of your code coverage, you can do so by using the `coverage` recipe
 
@@ -110,9 +87,37 @@ make COVERAGE_REPORT_FORMAT=json coverage
 To check the available supported coverage formats, please check
 [Coverage.py docs](https://coverage.readthedocs.io/en/7.2.7/#capabilities)
 
+
+## Running the application
+
+There are Makefile recipes to run the application directly or in a container
+
+### Running as a local process
+
+To run this project locally simply:
+
+```shell
+make run
+```
+
+After running that command you should see this output:
+
+```shell
+Watching for file changes with StatReloader
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 14, 2023 - 12:34:18
+Django version 4.2.2, using settings 'backend_starter_app.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+```
+
+Navigate to http://127.0.0.1:8080 to access to the Django application's web console.
+
 ### Running in a container locally:
 
-To run this project on a container using your local container engine of choice we provide Makefile recipes for both 
+To run this project on a container using your local container engine of choice we provide Makefile recipes for both
 [podman](podman.io) and [Docker](docker.com)
 
 #### Build the container image
@@ -139,7 +144,7 @@ make run-container
 make run-container-docker
 ```
 
-### Deploying to an Ephemeral namespace
+## Deploying to an Ephemeral namespace
 
 In order to deploy to an Ephemeral cluster, you need to build and push your container image to a Quay.io repository, and
 you need to login against the Ephemeral cluster. (please, check the [Pre-requisites section to know how to onboard to
@@ -147,7 +152,7 @@ the Ephemeral cluster in case you are not onboarded yet).
 
 Finally, you'll need to reserve a namespace in advance in the Ephemeral cluster.
 
-#### Reserve a namespace in the Ephemeral cluster
+### Reserve a namespace in the Ephemeral cluster
 
 If you don't already have bonfire installed, you can use `make install-dev` to install it to your virtual environment.
 Reserve a target namespace in the Ephemeral namespace and save it for later:
@@ -172,7 +177,7 @@ ephemeral-cv17hi
 Save the ephemeral namespace name for later, you can export it to an environment variable named `NAMESPACE` for
 simplicity.
 
-#### Building and pushing the backend starter application image
+### Building and pushing the backend starter application image
 
 Make sure to log in to your Quay.io account before this step, this guide will asume you have created a repository in
 Quay to host your images. We **encourage you to use a public repository** to simplify the process, since a private
@@ -205,7 +210,7 @@ make build-image-docker push-image-docker
 Once pushed, the image needs to be pulled by the Clowder operator. If the repository is `public` there should be no
 further requirements, and you can simply skip the next section straight into "Deploy your application".
 
-#### PRIVATE REPOSITORIES ONLY: Creating and adding a pull secret to the namespace for private registries in Quay.io.
+### PRIVATE REPOSITORIES ONLY: Creating and adding a pull secret to the namespace for private registries in Quay.io.
 
 Once the image is pushed to the user's org In Quay, you should create a pull secret and add it to the ClowderEnvironment's
 list of `PullSecrets`
@@ -252,7 +257,7 @@ You should locate and add the secret to the PullSecrets list:
        namespace: your-target-namespace    # <-- Add the ephemeral namespace name here
 ```
 
-#### Deploy your application to the Ephemeral namespace
+### Deploy your application to the Ephemeral namespace
 
 use the `bonfire_deploy` recipe to deploy your application into an ephemeral namespace.
 use the NAMESPACE variable to pass the name of the target namespace
@@ -261,9 +266,9 @@ use the NAMESPACE variable to pass the name of the target namespace
 # make NAMESPACE=your-ephemeral-namespace bonfire_deploy
 ```
 
-The application should deploy to your reserved ephemeral namespace within a few minutes. 
+The application should deploy to your reserved ephemeral namespace within a few minutes.
 
-### Additional Makefile recipes
+## Additional Makefile recipes
 
 ### Installing rh-pre-commit
 
@@ -290,7 +295,7 @@ git commit
 
 ### Installing the rest of the pre-commits
 
-We are using the python package [pre-commit](https://pre-commit.com/) to handle the setup and maintenance pre-commit hooks. We 
+We are using the python package [pre-commit](https://pre-commit.com/) to handle the setup and maintenance pre-commit hooks. We
 have pre-configured a few commit hooks but we encourage modifying the `.pre-commit-config.yaml` to fit your project as needed.
 If you don't already have a virtual environment setup, you can use the following commands to do that.
 
@@ -318,6 +323,6 @@ how to add these metrics can be found [here](https://github.com/prometheus/clien
 
 ### Configuring Logging
 
-For logging configuration, we are using the Django's native configuration tools with 
+For logging configuration, we are using the Django's native configuration tools with
 [python-json-logger](https://github.com/madzak/python-json-logger) to put the logs in JSON format. More information on how to
 further configure logging can be found [here](https://docs.djangoproject.com/en/4.2/topics/logging/#configuring-logging).
