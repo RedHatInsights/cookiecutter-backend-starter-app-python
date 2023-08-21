@@ -33,13 +33,13 @@ objects:
         livenessProbe:
           httpGet:
             path: /livez
-            port: ${WEB_PORT}
+            port: ${{WEB_PORT}}
           initialDelaySeconds: 3
           periodSeconds: 3
         readinessProbe:
           httpGet:
             path: /readyz
-            port: ${WEB_PORT}
+            port: ${{WEB_PORT}}
 
 parameters:
 - name: IMAGE_TAG
