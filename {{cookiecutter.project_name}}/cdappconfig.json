@@ -1,0 +1,19 @@
+{
+    "apiPath":"api",
+    "metricsPath":"/metrics",
+    "metricsPort":"8000",
+    "webPort":"8000",
+    "publicPort":"8000",
+    "database": {
+        "name": "dBaseName",
+        "username": "username",
+        "password": "password",
+        "hostname": "hostname",
+        "port": 5432,
+        "pgPass": "testing",
+        "adminUsername": "adminusername",
+        "adminPassword": "adminpassword",
+        "rdsCa": "ca",
+        "sslMode": "verify-full"
+    }
+}
