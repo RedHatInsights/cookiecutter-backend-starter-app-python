@@ -19,10 +19,18 @@ from pythonjsonlogger import jsonlogger
 API_PREFIX = "/api/"
 
 if isClowderEnabled():
+    cfg = LoadedConfig
+    
+    DB_USER = cfg.database.username
+    DB_PASSWORD = cfg.database.password
+    DB_HOST = cfg.database.hostname
+    DB_PORT = cfg.database.port
+    DB_NAME = cfg.database.name
+
     deploy_name = os.getenv("APP_NAME")
-    for endpoint in LoadedConfig.endpoints:
-        if endpoint.app == deploy_name:
-            API_PATH = API_PREFIX + endpoint.apiPath
+    for endpoint in cfg.Endpoints:
+        if endpoint.App == deploy_name:
+            API_PATH = API_PREFIX + endpoint.ApiPath
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
