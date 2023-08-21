@@ -58,7 +58,7 @@ parameters:
   value: {{cookiecutter.project_name | replace("_", "-")}}
 - name: WEB_PORT
   description: Port this is running on
-  value: 8000
+  value: "8000"
 - name: MEMORY_LIMIT_SERVICE
   value: 512Mi
 - name: MEMORY_REQUEST_SERVICE
