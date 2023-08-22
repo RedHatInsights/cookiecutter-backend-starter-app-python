@@ -20,7 +20,6 @@ API_PREFIX = "/api/"
 
 if isClowderEnabled():
     cfg = LoadedConfig
-    
     DB_USER = cfg.database.username
     DB_PASSWORD = cfg.database.password
     DB_HOST = cfg.database.hostname
@@ -28,9 +27,9 @@ if isClowderEnabled():
     DB_NAME = cfg.database.name
 
     deploy_name = os.getenv("APP_NAME")
-    for endpoint in cfg.Endpoints:
-        if endpoint.App == deploy_name:
-            API_PATH = API_PREFIX + endpoint.ApiPath
+    for endpoint in cfg.endpoints:
+        if endpoint.app == deploy_name:
+            API_PATH = API_PREFIX + endpoint.apiPath
 else:
     DB_USER = os.getenv("DB_USER", "testuser")
     DB_PASSWORD = os.getenv("DB_PASS", "test")
