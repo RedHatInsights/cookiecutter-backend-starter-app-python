@@ -31,11 +31,11 @@ if isClowderEnabled():
         if endpoint.App == deploy_name:
             API_PATH = API_PREFIX + endpoint.ApiPath
 else:
-    DB_USER = os.getenv("DB_USER", "insights")
-    DB_PASSWORD = os.getenv("DB_PASS", "insights")
+    DB_USER = os.getenv("DB_USER", "testuser")
+    DB_PASSWORD = os.getenv("DB_PASS", "test")
     DB_HOST = os.getenv("DB_HOST", "localhost")
     DB_PORT = os.getenv("DB_PORT", 5432)
-    DB_NAME = os.getenv("DB_NAME", "insights")
+    DB_NAME = os.getenv("DB_NAME", "testdb")
     API_PATH = API_PREFIX + os.getenv("API_PATH", "")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -106,8 +106,12 @@ WSGI_APPLICATION = '{{cookiecutter.project_name}}.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
     }
 }
 
