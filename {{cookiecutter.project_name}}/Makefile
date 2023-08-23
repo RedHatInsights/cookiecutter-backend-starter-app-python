@@ -13,9 +13,14 @@ CLOWDAPP_TEMPLATE=clowdapp.yaml
 CLOWDAPP_NAME={{cookiecutter.project_name | replace("_", "-")}}
 NAMESPACE=''
 PYTHON_CMD=python3
+POSTGRESQL_IMAGE=quay.io/cloudservices/postgresql-rds:15-1
 
-run: venv_check
+
+run: venv_check start-db
 	ACG_CONFIG=cdappconfig.json ${PYTHON_CMD} manage.py runserver
+
+migrate: venv_check
+	ACG_CONFIG=cdappconfig.json ${PYTHON_CMD} manage.py migrate
 
 install_pre_commit: venv_check
 	# Remove any outdated tools
@@ -105,8 +110,9 @@ bonfire_deploy:
 		-p service/IMAGE=$(IMAGE) -p service/IMAGE_TAG=$(IMAGE_TAG) -n $(NAMESPACE)
 
 start-db:
-	${CONTAINER_ENGINE} run -e POSTGRES_PASSWORD=test -e POSTGRES_USER=postgres -p 5432:5432 --name {{cookiecutter.project_name}}-db postgres &
-	while [ "`${CONTAINER_ENGINE} inspect -f {{ "{{" }}.State.Running{{ "}}" }} {{cookiecutter.project_name}}-db`" != "true" ]; do     sleep 1; done
+	${CONTAINER_ENGINE} run -e POSTGRESQL_PASSWORD=$(CLOWDAPP_NAME) -e POSTGRESQL_USER=$(CLOWDAPP_NAME)  -e POSTGRESQL_DATABASE=$(CLOWDAPP_NAME)  -p 5432:5432 --name $(CLOWDAPP_NAME)-db $(POSTGRESQL_IMAGE) &
+	sleep 10
+	make migrate
 
 start-db-docker: CONTAINER_ENGINE=docker
 start-db-docker: start-db
