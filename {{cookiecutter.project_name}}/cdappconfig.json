@@ -5,9 +5,9 @@
     "webPort":"8000",
     "publicPort":"8000",
     "database": {
-        "name": "postgres",
-        "username": "postgres",
-        "password": "test",
+        "name": "{{cookiecutter.project_name | replace("_", "-")}}",
+        "username": "{{cookiecutter.project_name | replace("_", "-")}}",
+        "password": "{{cookiecutter.project_name | replace("_", "-")}}",
         "hostname": "localhost",
         "port": 5432,
         "adminUsername": "adminusername",

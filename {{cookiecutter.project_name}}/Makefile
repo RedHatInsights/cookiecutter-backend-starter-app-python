@@ -1,19 +1,20 @@
 TEMPDIR_INFOSECTOOLS = /tmp/infosec-dev-tools
-VENV=.venv
+VENV = .venv
 COVERAGE_REPORT_FORMAT = 'html'
 DOCKERFILE ?= Dockerfile
 CONTAINER_WEBPORT ?= 8000
 HOST_WEBPORT=$(CONTAINER_WEBPORT)
-CONTEXT=.
-CONTAINER_ENGINE=podman
-BONFIRE_CONFIG=".bonfirecfg.yaml"
+CONTEXT = .
+CONTAINER_ENGINE = podman
+BONFIRE_CONFIG = .bonfirecfg.yaml
 CLOWDAPP_TEMPLATE ?= clowdapp.yaml
 APP_NAME ?= {{cookiecutter.project_name | replace("_", "-")}}
-PYTHON_CMD=python3.11
+PYTHON_CMD = python3.11
 QUAY_ORG ?= $(USER)
 QUAY_REPOSITORY ?= $(APP_NAME)
-IMAGE=quay.io/$(QUAY_ORG)/$(QUAY_REPOSITORY)
-ACG_CONFIG = cdappconfig.json 
+IMAGE = quay.io/$(QUAY_ORG)/$(QUAY_REPOSITORY)
+ACG_CONFIG = cdappconfig.json
+POSTGRESQL_IMAGE = quay.io/cloudservices/postgresql-rds:15-1
 
 # Determine the container engine
 ifneq ($(shell command -v "podman"),)
@@ -36,8 +37,11 @@ else
     IMAGE_TAG=$(BASE_IMAGE_TAG)
 endif
 
-run: venv_check
+run: venv_check start-db
 	python manage.py runserver
+
+migrate: venv_check
+	ACG_CONFIG=cdappconfig.json ${PYTHON_CMD} manage.py migrate
 
 install_pre_commit: venv_check
 	# Remove any outdated tools
@@ -129,15 +133,10 @@ bonfire_deploy: namespace_check
 		-p service/IMAGE=$(IMAGE) -p service/IMAGE_TAG=$(IMAGE_TAG) -n $(NAMESPACE)
 
 start-db:
-	${CONTAINER_ENGINE} run -e POSTGRES_PASSWORD=test -e POSTGRES_USER=postgres -p 5432:5432 --name {{cookiecutter.project_name}}-db postgres &
-	while [ "`${CONTAINER_ENGINE} inspect -f {{ "{{" }}.State.Running{{ "}}" }} {{cookiecutter.project_name}}-db`" != "true" ]; do     sleep 1; done
-
-start-db-docker: CONTAINER_ENGINE=docker
-start-db-docker: start-db
+	${CONTAINER_ENGINE} run -e POSTGRESQL_PASSWORD=$(APP_NAME) -e POSTGRESQL_USER=$(APP_NAME)  -e POSTGRESQL_DATABASE=$(APP_NAME)  -p 5432:5432 --name $(APP_NAME)-db $(POSTGRESQL_IMAGE) &
+	sleep 10
+	make migrate
 
 stop-db:
 	${CONTAINER_ENGINE} stop {{cookiecutter.project_name}}-db
 	${CONTAINER_ENGINE} rm {{cookiecutter.project_name}}-db
-
-stop-db-docker: CONTAINER_ENGINE=docker
-stop-db-docker: stop-db
