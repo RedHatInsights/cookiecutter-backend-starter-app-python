@@ -15,7 +15,7 @@ NAMESPACE=''
 PYTHON_CMD=python3
 
 run: venv_check
-	${PYTHON_CMD} manage.py runserver
+	ACG_CONFIG=cdappconfig.json ${PYTHON_CMD} manage.py runserver
 
 install_pre_commit: venv_check
 	# Remove any outdated tools
@@ -103,3 +103,9 @@ bonfire_user_namespaces:
 bonfire_deploy:
 	bonfire deploy -c $(BONFIRE_CONFIG) $(CLOWDAPP_NAME) \
 		-p service/IMAGE=$(IMAGE) -p service/IMAGE_TAG=$(IMAGE_TAG) -n $(NAMESPACE)
+
+start-db:
+	${CONTAINER_ENGINE} run -e POSTGRES_PASSWORD=test -e POSTGRES_USER=postgres -p 5432:5432 postgres
+
+start-db-docker: CONTAINER_ENGINE=docker
+start-db-docker: start-db

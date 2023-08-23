@@ -31,12 +31,8 @@ if isClowderEnabled():
         if endpoint.App == deploy_name:
             API_PATH = API_PREFIX + endpoint.ApiPath
 else:
-    DB_USER = os.getenv("DB_USER", "testuser")
-    DB_PASSWORD = os.getenv("DB_PASS", "test")
-    DB_HOST = os.getenv("DB_HOST", "localhost")
-    DB_PORT = os.getenv("DB_PORT", 5432)
-    DB_NAME = os.getenv("DB_NAME", "testdb")
-    API_PATH = API_PREFIX + os.getenv("API_PATH", "")
+    raise FileNotFoundError("Clowder app config file not found, please set ACG_CONFIG to valid file path")
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
