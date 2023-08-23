@@ -59,13 +59,13 @@ clean:
 	rm -rf __pycache__
 	find . -name "*.pyc" -exec rm -f {} \;
 
-test: venv_check install_dev
+test: venv_check install_dev start-db
 	ACG_CONFIG=cdappconfig.json ${PYTHON_CMD} manage.py test
 
-smoke-test: venv_check install_dev
+smoke-test: venv_check install_dev start-db
 	@echo "Running smoke tests"
 
-coverage: venv_check install_dev
+coverage: venv_check install_dev start-db
 	ACG_CONFIG=cdappconfig.json coverage run --source="." manage.py test
 	coverage $(COVERAGE_REPORT_FORMAT)
 
@@ -105,7 +105,8 @@ bonfire_deploy:
 		-p service/IMAGE=$(IMAGE) -p service/IMAGE_TAG=$(IMAGE_TAG) -n $(NAMESPACE)
 
 start-db:
-	${CONTAINER_ENGINE} run -e POSTGRES_PASSWORD=test -e POSTGRES_USER=postgres -p 5432:5432 --name {{cookiecutter.project_name}}-db postgres
+	${CONTAINER_ENGINE} run -e POSTGRES_PASSWORD=test -e POSTGRES_USER=postgres -p 5432:5432 --name {{cookiecutter.project_name}}-db postgres &
+	while [ "`${CONTAINER_ENGINE} inspect -f {{ "{{" }}.State.Running{{ "}}" }} {{cookiecutter.project_name}}-db`" != "true" ]; do     sleep 1; done
 
 start-db-docker: CONTAINER_ENGINE=docker
 start-db-docker: start-db
