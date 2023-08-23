@@ -13,6 +13,7 @@ PYTHON_CMD=python3.11
 QUAY_ORG ?= $(USER)
 QUAY_REPOSITORY ?= $(APP_NAME)
 IMAGE=quay.io/$(QUAY_ORG)/$(QUAY_REPOSITORY)
+ACG_CONFIG = cdappconfig.json 
 
 # Determine the container engine
 ifneq ($(shell command -v "podman"),)
@@ -126,3 +127,9 @@ bonfire_user_namespaces:
 bonfire_deploy: namespace_check
 	bonfire deploy -c $(BONFIRE_CONFIG) $(APP_NAME) -s local \
 		-p service/IMAGE=$(IMAGE) -p service/IMAGE_TAG=$(IMAGE_TAG) -n $(NAMESPACE)
+
+start-db:
+	${CONTAINER_ENGINE} run -e POSTGRES_PASSWORD=test -e POSTGRES_USER=postgres -p 5432:5432 postgres
+
+start-db-docker: CONTAINER_ENGINE=docker
+start-db-docker: start-db
