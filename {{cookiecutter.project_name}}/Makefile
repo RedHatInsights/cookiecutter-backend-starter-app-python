@@ -91,7 +91,7 @@ smoke-test: venv_check install_dev
 	@echo "Running smoke tests"
 
 coverage: venv_check install_dev
-	coverage run --source="." manage.py test
+	ACG_CONFIG=cdappconfig.json coverage run --source="." manage.py test
 	coverage $(COVERAGE_REPORT_FORMAT)
 
 coverage-ci: COVERAGE_REPORT_FORMAT=xml
@@ -129,7 +129,14 @@ bonfire_deploy: namespace_check
 		-p service/IMAGE=$(IMAGE) -p service/IMAGE_TAG=$(IMAGE_TAG) -n $(NAMESPACE)
 
 start-db:
-	${CONTAINER_ENGINE} run -e POSTGRES_PASSWORD=test -e POSTGRES_USER=postgres -p 5432:5432 postgres
+	${CONTAINER_ENGINE} run -e POSTGRES_PASSWORD=test -e POSTGRES_USER=postgres -p 5432:5432 --name {{cookiecutter.project_name}}-db postgres
 
 start-db-docker: CONTAINER_ENGINE=docker
 start-db-docker: start-db
+
+stop-db:
+	${CONTAINER_ENGINE} stop {{cookiecutter.project_name}}-db
+	${CONTAINER_ENGINE} rm {{cookiecutter.project_name}}-db
+
+stop-db-docker: CONTAINER_ENGINE=docker
+stop-db-docker: stop-db
