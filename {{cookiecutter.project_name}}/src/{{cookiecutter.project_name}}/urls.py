@@ -15,6 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, include
+from django.conf import settings
 from rest_framework import routers
 
 # flake8: noqa
@@ -25,6 +26,6 @@ from . import views
 router = routers.DefaultRouter()
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('', include('django_prometheus.urls')),
+    path(settings.API_PATH, include(router.urls)),
+    path(settings.API_PATH, include('django_prometheus.urls')),
 ]

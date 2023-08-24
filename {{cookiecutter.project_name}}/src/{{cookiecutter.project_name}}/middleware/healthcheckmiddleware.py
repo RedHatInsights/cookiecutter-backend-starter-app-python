@@ -3,6 +3,7 @@ from django.db.migrations.executor import MigrationExecutor
 from django.db import connections, DEFAULT_DB_ALIAS
 from django.core.cache import caches
 from django.core.cache.backends.memcached import BaseMemcachedCache
+from django.conf import settings
 
 
 class HealthCheckMiddleware:
@@ -13,9 +14,9 @@ class HealthCheckMiddleware:
 
     def __call__(self, request):
         if request.method == "GET":
-            if request.path == "/readyz":
+            if request.path == settings.API_PATH + "/readyz":
                 return self.readiness(request)
-            elif request.path == "/livez":
+            elif request.path == settings.API_PATH + "/livez":
                 return self.liveness(request)
         return self.get_response(request)
 
