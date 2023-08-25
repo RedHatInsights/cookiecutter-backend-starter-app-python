@@ -14,9 +14,9 @@ class HealthCheckMiddleware:
 
     def __call__(self, request):
         if request.method == "GET":
-            if request.path == settings.API_PATH + "/readyz":
+            if request.path == "/readyz":
                 return self.readiness(request)
-            elif request.path == settings.API_PATH + "/livez":
+            elif request.path == "/livez":
                 return self.liveness(request)
         return self.get_response(request)
 
