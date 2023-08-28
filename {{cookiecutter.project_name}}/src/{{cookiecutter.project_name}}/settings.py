@@ -19,14 +19,14 @@ from pythonjsonlogger import jsonlogger
 API_PREFIX = "/api/"
 
 if isClowderEnabled():
-    deploy_name = os.environ("APP_NAME")
-    for endpoint in LoadedConfig.AppConfig.Endpoints:
-        if endpoint.App == deploy_name:
-            API_PATH = API_PREFIX + endpoint.ApiPath
+    deploy_name = os.getenv("APP_NAME")
+    for endpoint in LoadedConfig.endpoints:
+        if endpoint.app == deploy_name:
+            API_PATH = API_PREFIX + endpoint.apiPath
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+DATA_DIR = Path(os.getenv("DATA_DIR", str(BASE_DIR))).resolve()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -89,11 +89,10 @@ WSGI_APPLICATION = '{{cookiecutter.project_name}}.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': DATA_DIR / 'db.sqlite3',
     }
 }
 

@@ -1,7 +1,7 @@
 def secrets = [
     [path: params.VAULT_PATH_SVC_ACCOUNT_EPHEMERAL, engineVersion: 1, secretValues: [
-        [envVar: 'OC_LOGIN_TOKEN_DEV', vaultKey: 'oc-login-token-dev'],
-        [envVar: 'OC_LOGIN_SERVER_DEV', vaultKey: 'oc-login-server-dev']]],
+        [envVar: 'OC_LOGIN_TOKEN', vaultKey: 'oc-login-token'],
+        [envVar: 'OC_LOGIN_SERVER', vaultKey: 'oc-login-server']]],
     [path: params.VAULT_PATH_QUAY_PUSH, engineVersion: 1, secretValues: [
         [envVar: 'QUAY_USER', vaultKey: 'user'],
         [envVar: 'QUAY_TOKEN', vaultKey: 'token']]],
@@ -18,51 +18,73 @@ pipeline {
         timestamps()
     }
     environment {
-        // --------------------------------------------
-        // Options that must be configured by app owner
-        // --------------------------------------------
-        APP_NAME="CHANGEME"  // name of app-sre "application" folder this component lives in
-        COMPONENT_NAME="CHANGEME"  // name of app-sre "resourceTemplate" in deploy.yaml for this component
-        IMAGE="quay.io/cloudservices/CHANGEME"  // image location on quay
-
-        IQE_PLUGINS="CHANGEME"  // name of the IQE plugin for this app.
-        IQE_MARKER_EXPRESSION="CHANGEME"  // This is the value passed to pytest -m
-        IQE_FILTER_EXPRESSION=""  // This is the value passed to pytest -k
-        IQE_CJI_TIMEOUT="30m"  // This is the time to wait for smoke test to complete or fail
-
-        CICD_URL="https://raw.githubusercontent.com/RedHatInsights/cicd-tools/main"
+        APP_NAME='backend-starter-app-python'
+        QUAY_ORG='cloudservices'
     }
     stages {
-        stage('Build the PR commit image') {
+        stage('Build the PR project template and setup') {
             steps {
                 withVault([configuration: configuration, vaultSecrets: secrets]) {
-                    sh 'make build-image'
-                }
+                    sh '''
+                        make venv_create
+                        source .venv/bin/activate
+                        make setup
+                        rm -rf .venv
 
-                sh 'mkdir -p artifacts'
-            }
-        }
-
-        stage('Run Tests') {
-            parallel {
-                stage('Run unit tests') {
-                    steps {
-                        withVault([configuration: configuration, vaultSecrets: secrets]) {
-                            sh '''make venv_create \
-                                source .venv/bin/activate \
-                                make test'''
-                        }
+                        oc login --token=${OC_LOGIN_TOKEN} --server=${OC_LOGIN_SERVER}
+                    '''
+                    dir("${APP_NAME}") {
+                        sh '''
+                            make venv_create
+                            source .venv/bin/activate
+                            make install_dev
+                        '''
                     }
                 }
-
-                stage('Run smoke tests') {
-                    steps {
-                        withVault([configuration: configuration, vaultSecrets: secrets]) {
-                            sh '''
-                                make smoke-test
-                            '''
-                        }
-
+            }
+        }
+        stage('Build temporary image') {
+            steps {
+                dir("${APP_NAME}") {
+                    withVault([configuration: configuration, vaultSecrets: secrets]) {
+                        sh '''
+                            source .venv/bin/activate
+                            make build-image
+                            make quay_login
+                            make push-image
+                        '''
+                    }
+                }
+            }
+        }
+        stage('Deploy on Ephemeral') {
+            steps {
+                dir("${APP_NAME}") {
+                    script {
+                        NAMESPACE = sh(returnStdout:true, script: '''
+                            source .venv/bin/activate
+                            make bonfire_reserve_namespace
+                        ''').trim()
+                    }
+                    echo "Namespace reserved:${NAMESPACE}"
+                    sh """
+                        source .venv/bin/activate
+                        NAMESPACE=${NAMESPACE} make bonfire_deploy
+                        """
+                }
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                if (NAMESPACE) {
+                    dir("${APP_NAME}") {
+                        echo "Releasing namespace: ${NAMESPACE}"
+                        sh """
+                            source .venv/bin/activate
+                            NAMESPACE=${NAMESPACE} make bonfire_release_namespace
+                        """
                     }
                 }
             }
