@@ -3,7 +3,6 @@ from django.db.migrations.executor import MigrationExecutor
 from django.db import connections, DEFAULT_DB_ALIAS
 from django.core.cache import caches
 from django.core.cache.backends.memcached import BaseMemcachedCache
-from django.conf import settings
 
 
 class HealthCheckMiddleware:
