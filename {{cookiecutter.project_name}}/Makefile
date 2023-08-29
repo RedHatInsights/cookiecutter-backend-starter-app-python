@@ -1,20 +1,22 @@
 TEMPDIR_INFOSECTOOLS = /tmp/infosec-dev-tools
-VENV=.venv
+VENV = .venv
 COVERAGE_REPORT_FORMAT = 'html'
 DOCKERFILE ?= Dockerfile
 CONTAINER_WEBPORT ?= 8000
 HOST_WEBPORT=$(CONTAINER_WEBPORT)
-CONTEXT=.
-CONTAINER_ENGINE=podman
-BONFIRE_CONFIG=".bonfirecfg.yaml"
+CONTEXT = .
+CONTAINER_ENGINE = podman
+BONFIRE_CONFIG = .bonfirecfg.yaml
 NAMESPACE=''
 POSTGRESQL_IMAGE=quay.io/cloudservices/postgresql-rds:15-1
 CLOWDAPP_TEMPLATE ?= clowdapp.yaml
 APP_NAME ?= {{cookiecutter.project_name | replace("_", "-")}}
-PYTHON_CMD=python3.11
+PYTHON_CMD = python3.11
 QUAY_ORG ?= $(USER)
 QUAY_REPOSITORY ?= $(APP_NAME)
-IMAGE=quay.io/$(QUAY_ORG)/$(QUAY_REPOSITORY)
+IMAGE = quay.io/$(QUAY_ORG)/$(QUAY_REPOSITORY)
+POSTGRESQL_IMAGE = quay.io/cloudservices/postgresql-rds:15-1
+export ACG_CONFIG = cdappconfig.json
 
 # Determine the container engine
 ifneq ($(shell command -v "podman"),)
@@ -37,7 +39,7 @@ else
     IMAGE_TAG=$(BASE_IMAGE_TAG)
 endif
 
-run: venv_check start-db
+run: venv_check stop-db install start-db migrate
 	ACG_CONFIG=cdappconfig.json ${PYTHON_CMD} manage.py runserver
 
 migrate: venv_check
@@ -132,17 +134,11 @@ bonfire_deploy: namespace_check
 	bonfire deploy -c $(BONFIRE_CONFIG) $(APP_NAME) -s local \
 		-p service/IMAGE=$(IMAGE) -p service/IMAGE_TAG=$(IMAGE_TAG) -n $(NAMESPACE)
 
-start-db:
-	${CONTAINER_ENGINE} run -e POSTGRESQL_PASSWORD=$(APP_NAME) -e POSTGRESQL_USER=$(APP_NAME)  -e POSTGRESQL_DATABASE=$(APP_NAME)  -p 5432:5432 --name $(APP_NAME)-db $(POSTGRESQL_IMAGE) &
+start-db: stop-db
+	$(CONTAINER_ENGINE) run -e POSTGRESQL_PASSWORD=$(APP_NAME) -e POSTGRESQL_USER=$(APP_NAME)  -e POSTGRESQL_DATABASE=$(APP_NAME)  -p 5432:5432 --name $(APP_NAME)-db $(POSTGRESQL_IMAGE) &
 	sleep 10
-	make migrate
-
-start-db-docker: CONTAINER_ENGINE=docker
-start-db-docker: start-db
+  make migrate
 
 stop-db:
-	${CONTAINER_ENGINE} stop {{cookiecutter.project_name}}-db
-	${CONTAINER_ENGINE} rm {{cookiecutter.project_name}}-db
-
-stop-db-docker: CONTAINER_ENGINE=docker
-stop-db-docker: stop-db
+	$(CONTAINER_ENGINE) stop $(APP_NAME)-db
+	$(CONTAINER_ENGINE) rm $(APP_NAME)-db
