@@ -94,12 +94,7 @@ There are Makefile recipes to run the application directly or in a container
 
 ### Running as a local process
 
-Before running the app we need to spin up a postgres DB. This makefile target will spin up a container with the appropriate credentials for the app to connect:
-```shell
-make start-db
-```
-
-To run this project locally simply:
+To run this project locally simply run the following command:
 
 ```shell
 make run
