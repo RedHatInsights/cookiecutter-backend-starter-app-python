@@ -20,23 +20,23 @@ export ACG_CONFIG = cdappconfig.json
 
 # Determine the container engine
 ifneq ($(shell command -v "podman"),)
-    CONTAINER_ENGINE = podman
+	CONTAINER_ENGINE = podman
 else ifneq ($(shell command -v "docker"),)
-    CONTAINER_ENGINE = docker
+	CONTAINER_ENGINE = docker
 else
-    $(error "No container engine found. Install either podman or docker.")
+	$(error "No container engine found. Install either podman or docker.")
 endif
 
 # Determine IMAGE_TAG and LABEL
 BASE_IMAGE_TAG=$(shell git rev-parse --short=7 HEAD)
 ifdef ghprbPullId
-    IMAGE_TAG=pr-$(ghprbPullId)-$(BASE_IMAGE_TAG)
-    LABEL=$(shell echo "--label quay.expires-after=1h")
+	IMAGE_TAG=pr-$(ghprbPullId)-$(BASE_IMAGE_TAG)
+	LABEL=$(shell echo "--label quay.expires-after=1h")
 else ifdef gitlabMergeRequestId
-    IMAGE_TAG=mr-$(gitlabMergeRequestId)-$(BASE_IMAGE_TAG)
-    LABEL=$(shell echo "--label quay.expires-after=1h")
+	IMAGE_TAG=mr-$(gitlabMergeRequestId)-$(BASE_IMAGE_TAG)
+	LABEL=$(shell echo "--label quay.expires-after=1h")
 else
-    IMAGE_TAG=$(BASE_IMAGE_TAG)
+	IMAGE_TAG=$(BASE_IMAGE_TAG)
 endif
 
 run: venv_check stop-db install start-db migrate
@@ -92,13 +92,16 @@ clean:
 
 test: venv_check install_dev start-db
 	ACG_CONFIG=cdappconfig.json ${PYTHON_CMD} manage.py test
+	make stop-db
 
 smoke-test: venv_check install_dev start-db
 	@echo "Running smoke tests"
+	make stop-db
 
 coverage: venv_check install_dev start-db
 	ACG_CONFIG=cdappconfig.json coverage run --source="." manage.py test
 	coverage $(COVERAGE_REPORT_FORMAT)
+	make stop-db
 
 coverage-ci: COVERAGE_REPORT_FORMAT=xml
 coverage-ci: coverage
@@ -134,10 +137,10 @@ bonfire_deploy: namespace_check
 	bonfire deploy -c $(BONFIRE_CONFIG) $(APP_NAME) -s local \
 		-p service/IMAGE=$(IMAGE) -p service/IMAGE_TAG=$(IMAGE_TAG) -n $(NAMESPACE)
 
-start-db: stop-db
+start-db:
 	$(CONTAINER_ENGINE) run -e POSTGRESQL_PASSWORD=$(APP_NAME) -e POSTGRESQL_USER=$(APP_NAME)  -e POSTGRESQL_DATABASE=$(APP_NAME)  -p 5432:5432 --name $(APP_NAME)-db $(POSTGRESQL_IMAGE) &
-	sleep 10
-  make migrate
+	sleep 20
+	make migrate
 
 stop-db:
 	$(CONTAINER_ENGINE) stop $(APP_NAME)-db
