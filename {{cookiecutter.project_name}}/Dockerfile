@@ -8,7 +8,7 @@ FROM registry.access.redhat.com/ubi8/ubi-minimal:8.8-860
 ENV VIRTUAL_ENV='/opt/app-root'
 ENV APP_SRC='/app-src'
 
-RUN microdnf install -y "python3.11-3.11.2-2.el8_8.1.x86_64" \
+RUN microdnf install -y python3.11-3.11.2-2.el8_8.1.x86_64 libpq-devel \
     && microdnf clean all
 
 RUN mkdir $APP_SRC && chown 1001:0 $APP_SRC

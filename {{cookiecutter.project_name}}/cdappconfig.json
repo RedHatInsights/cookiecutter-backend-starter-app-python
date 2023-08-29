@@ -1,0 +1,27 @@
+{
+    "apiPath":"api",
+    "metricsPath":"/metrics",
+    "metricsPort":"8000",
+    "webPort":"8000",
+    "publicPort":"8000",
+    "database": {
+        "name": "{{cookiecutter.project_name | replace("_", "-")}}",
+        "username": "{{cookiecutter.project_name | replace("_", "-")}}",
+        "password": "{{cookiecutter.project_name | replace("_", "-")}}",
+        "hostname": "localhost",
+        "port": 5432,
+        "adminUsername": "adminusername",
+        "adminPassword": "adminpassword",
+        "rdsCa": "ca",
+        "sslMode": "verify-full"
+    },
+    "endpoints": [
+        {
+            "name": "service",
+            "app": "baking-test",
+            "hostname": "localhost",
+            "port": 8000,
+            "apiPath": "baking-test"
+        }
+    ]
+}
