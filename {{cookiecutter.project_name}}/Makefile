@@ -7,7 +7,6 @@ HOST_WEBPORT=$(CONTAINER_WEBPORT)
 CONTEXT = .
 CONTAINER_ENGINE = podman
 BONFIRE_CONFIG = .bonfirecfg.yaml
-NAMESPACE=''
 POSTGRESQL_IMAGE=quay.io/cloudservices/postgresql-rds:15-1
 CLOWDAPP_TEMPLATE ?= clowdapp.yaml
 APP_NAME ?= {{cookiecutter.project_name | replace("_", "-")}}
@@ -40,10 +39,10 @@ else
 endif
 
 run: venv_check stop-db install start-db migrate
-	ACG_CONFIG=cdappconfig.json ${PYTHON_CMD} manage.py runserver
+	${PYTHON_CMD} manage.py runserver
 
 migrate: venv_check
-	ACG_CONFIG=cdappconfig.json ${PYTHON_CMD} manage.py migrate
+	${PYTHON_CMD} manage.py migrate
 
 install_pre_commit: venv_check
 	# Remove any outdated tools
@@ -91,7 +90,7 @@ clean:
 	find . -name "*.pyc" -exec rm -f {} \;
 
 test: venv_check install_dev start-db
-	ACG_CONFIG=cdappconfig.json ${PYTHON_CMD} manage.py test
+	${PYTHON_CMD} manage.py test
 	make stop-db
 
 smoke-test: venv_check install_dev start-db
@@ -99,7 +98,7 @@ smoke-test: venv_check install_dev start-db
 	make stop-db
 
 coverage: venv_check install_dev start-db
-	ACG_CONFIG=cdappconfig.json coverage run --source="." manage.py test
+	coverage run --source="." manage.py test
 	coverage $(COVERAGE_REPORT_FORMAT)
 	make stop-db
 
