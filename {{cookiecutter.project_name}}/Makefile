@@ -13,8 +13,8 @@ PYTHON_CMD = python3.11
 QUAY_ORG ?= $(USER)
 QUAY_REPOSITORY ?= $(APP_NAME)
 IMAGE = quay.io/$(QUAY_ORG)/$(QUAY_REPOSITORY)
-ACG_CONFIG = cdappconfig.json
 POSTGRESQL_IMAGE = quay.io/cloudservices/postgresql-rds:15-1
+export ACG_CONFIG = cdappconfig.json
 
 # Determine the container engine
 ifneq ($(shell command -v "podman"),)
@@ -37,11 +37,11 @@ else
     IMAGE_TAG=$(BASE_IMAGE_TAG)
 endif
 
-run: venv_check start-db
+run: venv_check stop-db install start-db migrate
 	python manage.py runserver
 
 migrate: venv_check
-	ACG_CONFIG=cdappconfig.json ${PYTHON_CMD} manage.py migrate
+	python manage.py migrate
 
 install_pre_commit: venv_check
 	# Remove any outdated tools
@@ -95,7 +95,7 @@ smoke-test: venv_check install_dev start-db
 	@echo "Running smoke tests"
 
 coverage: venv_check install_dev start-db
-	ACG_CONFIG=cdappconfig.json coverage run --source="." manage.py test
+	coverage run --source="." manage.py test
 	coverage $(COVERAGE_REPORT_FORMAT)
 
 coverage-ci: COVERAGE_REPORT_FORMAT=xml
@@ -132,11 +132,10 @@ bonfire_deploy: namespace_check
 	bonfire deploy -c $(BONFIRE_CONFIG) $(APP_NAME) -s local \
 		-p service/IMAGE=$(IMAGE) -p service/IMAGE_TAG=$(IMAGE_TAG) -n $(NAMESPACE)
 
-start-db:
-	${CONTAINER_ENGINE} run -e POSTGRESQL_PASSWORD=$(APP_NAME) -e POSTGRESQL_USER=$(APP_NAME)  -e POSTGRESQL_DATABASE=$(APP_NAME)  -p 5432:5432 --name $(APP_NAME)-db $(POSTGRESQL_IMAGE) &
+start-db: stop-db
+	$(CONTAINER_ENGINE) run -e POSTGRESQL_PASSWORD=$(APP_NAME) -e POSTGRESQL_USER=$(APP_NAME)  -e POSTGRESQL_DATABASE=$(APP_NAME)  -p 5432:5432 --name $(APP_NAME)-db $(POSTGRESQL_IMAGE) &
 	sleep 10
-	make migrate
 
 stop-db:
-	${CONTAINER_ENGINE} stop {{cookiecutter.project_name}}-db
-	${CONTAINER_ENGINE} rm {{cookiecutter.project_name}}-db
+	$(CONTAINER_ENGINE) stop $(APP_NAME)-db
+	$(CONTAINER_ENGINE) rm $(APP_NAME)-db

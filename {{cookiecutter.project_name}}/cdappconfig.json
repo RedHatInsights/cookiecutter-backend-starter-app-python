@@ -14,5 +14,14 @@
         "adminPassword": "adminpassword",
         "rdsCa": "ca",
         "sslMode": "verify-full"
-    }
+    },
+    "endpoints": [
+        {
+            "name": "service",
+            "app": "baking-test",
+            "hostname": "localhost",
+            "port": 8000,
+            "apiPath": "baking-test"
+        }
+    ]
 }
