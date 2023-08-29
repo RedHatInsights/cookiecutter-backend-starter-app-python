@@ -12,35 +12,55 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
-from app_common_python import LoadedConfig, isClowderEnabled
+from app_common_python import LoadedConfig, isClowderEnabled, loadConfig
 # flake8: noqa
 from pythonjsonlogger import jsonlogger
-
-API_PREFIX = "/api/"
-
-if isClowderEnabled():
-    deploy_name = os.getenv("APP_NAME")
-    for endpoint in LoadedConfig.endpoints:
-        if endpoint.app == deploy_name:
-            API_PATH = API_PREFIX + endpoint.apiPath
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = Path(os.getenv("DATA_DIR", str(BASE_DIR))).resolve()
+APP_NAME = os.getenv("APP_NAME", "{{cookiecutter.project_name}}")
+
+if not os.getenv("ACG_CONFIG"):
+    os.environ["ACG_CONFIG"] = str((BASE_DIR.parent / "cdappconfig.json").resolve())
+    LoadedConfig = loadConfig(os.environ["ACG_CONFIG"])
+
+if isClowderEnabled():
+    cfg = LoadedConfig
+    DB_USER = cfg.database.username
+    DB_PASSWORD = cfg.database.password
+    DB_HOST = cfg.database.hostname
+    DB_PORT = cfg.database.port
+    DB_NAME = cfg.database.name
+
+    # TODO: refactor into app-common lib
+    try:
+        API_PATH = [ x.apiPath for x in cfg.endpoints if x.app == APP_NAME ].pop()
+    except IndexError:
+        API_PATH = ""
+
+else:
+    raise FileNotFoundError("Clowder app config file not found, please set ACG_CONFIG to valid file path")
+
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
+# TODO: remove
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-6yc%o!tj2*2u+)a*^+7vu1yz_yrsz72r3znkewic400)3ij*wr'
 
+# TODO: remove
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# TODO: configure properly
 ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', '*']
 
 # Application definition
 
+# TODO: add baking-test
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -90,9 +110,17 @@ WSGI_APPLICATION = '{{cookiecutter.project_name}}.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
-    'default': {
+    'local' : {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': DATA_DIR / 'db.sqlite3',
+    },
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
     }
 }
 

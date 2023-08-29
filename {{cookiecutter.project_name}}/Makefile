@@ -1,42 +1,48 @@
 TEMPDIR_INFOSECTOOLS = /tmp/infosec-dev-tools
-VENV=.venv
+VENV = .venv
 COVERAGE_REPORT_FORMAT = 'html'
 DOCKERFILE ?= Dockerfile
 CONTAINER_WEBPORT ?= 8000
 HOST_WEBPORT=$(CONTAINER_WEBPORT)
-CONTEXT=.
-CONTAINER_ENGINE=podman
-BONFIRE_CONFIG=".bonfirecfg.yaml"
+CONTEXT = .
+CONTAINER_ENGINE = podman
+BONFIRE_CONFIG = .bonfirecfg.yaml
+POSTGRESQL_IMAGE=quay.io/cloudservices/postgresql-rds:15-1
 CLOWDAPP_TEMPLATE ?= clowdapp.yaml
 APP_NAME ?= {{cookiecutter.project_name | replace("_", "-")}}
-PYTHON_CMD=python3.11
+PYTHON_CMD = python3.11
 QUAY_ORG ?= $(USER)
 QUAY_REPOSITORY ?= $(APP_NAME)
-IMAGE=quay.io/$(QUAY_ORG)/$(QUAY_REPOSITORY)
+IMAGE = quay.io/$(QUAY_ORG)/$(QUAY_REPOSITORY)
+POSTGRESQL_IMAGE = quay.io/cloudservices/postgresql-rds:15-1
+export ACG_CONFIG = cdappconfig.json
 
 # Determine the container engine
 ifneq ($(shell command -v "podman"),)
-    CONTAINER_ENGINE = podman
+	CONTAINER_ENGINE = podman
 else ifneq ($(shell command -v "docker"),)
-    CONTAINER_ENGINE = docker
+	CONTAINER_ENGINE = docker
 else
-    $(error "No container engine found. Install either podman or docker.")
+	$(error "No container engine found. Install either podman or docker.")
 endif
 
 # Determine IMAGE_TAG and LABEL
 BASE_IMAGE_TAG=$(shell git rev-parse --short=7 HEAD)
 ifdef ghprbPullId
-    IMAGE_TAG=pr-$(ghprbPullId)-$(BASE_IMAGE_TAG)
-    LABEL=$(shell echo "--label quay.expires-after=1h")
+	IMAGE_TAG=pr-$(ghprbPullId)-$(BASE_IMAGE_TAG)
+	LABEL=$(shell echo "--label quay.expires-after=1h")
 else ifdef gitlabMergeRequestId
-    IMAGE_TAG=mr-$(gitlabMergeRequestId)-$(BASE_IMAGE_TAG)
-    LABEL=$(shell echo "--label quay.expires-after=1h")
+	IMAGE_TAG=mr-$(gitlabMergeRequestId)-$(BASE_IMAGE_TAG)
+	LABEL=$(shell echo "--label quay.expires-after=1h")
 else
-    IMAGE_TAG=$(BASE_IMAGE_TAG)
+	IMAGE_TAG=$(BASE_IMAGE_TAG)
 endif
 
-run: venv_check
-	python manage.py runserver
+run: venv_check stop-db install start-db migrate
+	${PYTHON_CMD} manage.py runserver
+
+migrate: venv_check
+	${PYTHON_CMD} manage.py migrate
 
 install_pre_commit: venv_check
 	# Remove any outdated tools
@@ -83,15 +89,18 @@ clean:
 	rm -rf __pycache__
 	find . -name "*.pyc" -exec rm -f {} \;
 
-test: venv_check install_dev
-	python manage.py test
+test: venv_check install_dev start-db
+	${PYTHON_CMD} manage.py test
+	make stop-db
 
-smoke-test: venv_check install_dev
+smoke-test: venv_check install_dev start-db
 	@echo "Running smoke tests"
+	make stop-db
 
-coverage: venv_check install_dev
+coverage: venv_check install_dev start-db
 	coverage run --source="." manage.py test
 	coverage $(COVERAGE_REPORT_FORMAT)
+	make stop-db
 
 coverage-ci: COVERAGE_REPORT_FORMAT=xml
 coverage-ci: coverage
@@ -126,3 +135,12 @@ bonfire_user_namespaces:
 bonfire_deploy: namespace_check
 	bonfire deploy -c $(BONFIRE_CONFIG) $(APP_NAME) -s local \
 		-p service/IMAGE=$(IMAGE) -p service/IMAGE_TAG=$(IMAGE_TAG) -n $(NAMESPACE)
+
+start-db:
+	$(CONTAINER_ENGINE) run -e POSTGRESQL_PASSWORD=$(APP_NAME) -e POSTGRESQL_USER=$(APP_NAME)  -e POSTGRESQL_DATABASE=$(APP_NAME)  -p 5432:5432 --name $(APP_NAME)-db $(POSTGRESQL_IMAGE) &
+	sleep 20
+	make migrate
+
+stop-db:
+	$(CONTAINER_ENGINE) stop $(APP_NAME)-db
+	$(CONTAINER_ENGINE) rm $(APP_NAME)-db
