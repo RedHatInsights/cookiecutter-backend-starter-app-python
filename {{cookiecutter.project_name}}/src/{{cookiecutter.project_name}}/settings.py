@@ -34,10 +34,9 @@ if isClowderEnabled():
 else:
     raise FileNotFoundError("Clowder app config file not found, please set ACG_CONFIG to valid file path")
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+DATA_DIR = Path(os.getenv("DATA_DIR", str(BASE_DIR))).resolve()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -100,7 +99,6 @@ WSGI_APPLICATION = '{{cookiecutter.project_name}}.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',

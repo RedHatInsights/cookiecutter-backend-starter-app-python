@@ -22,7 +22,25 @@ objects:
           enabled: true
           apiPath: "${APP_NAME}"
       podSpec:
+        initContainers:
+          - args:
+            - "migrate"
+            inheritEnv: true
+            volumeMounts:
+              - name: data
+                mountPath: "${DATA_DIR}"
         image: ${IMAGE}:${IMAGE_TAG}
+        env:
+          - name: APP_NAME
+            value: "${APP_NAME}"
+          - name: DATA_DIR
+            value: "${DATA_DIR}"
+        volumeMounts:
+          - name: data
+            mountPath: "${DATA_DIR}"
+        volumes:
+          - name: data
+            emptyDir : {}
         resources:
           limits:
             cpu: ${CPU_LIMIT_SERVICE}
@@ -50,6 +68,10 @@ parameters:
   description: Image name
 - name: ENV_NAME
   description: ClowdEnv Name
+- name: DATA_DIR
+  description: Data directory path
+  required: true
+  value: '/data'
 - name: REPLICAS_SERVICE
   description: Replica count for backend service
   value: "1"
