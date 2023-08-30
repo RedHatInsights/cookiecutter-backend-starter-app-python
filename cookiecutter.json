@@ -1,4 +1,5 @@
 {
     "project_name": "baking-test",
-    "initialize_git": "y"
+    "initialize_git": "y",
+    "quay_org": "cloudservices"
 }
