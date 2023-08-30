@@ -39,7 +39,7 @@ else
 endif
 
 run: venv_check stop-db install start-db migrate
-	${PYTHON_CMD} manage.py runserver 8080
+	${PYTHON_CMD} manage.py runserver
 
 migrate: venv_check
 	${PYTHON_CMD} manage.py migrate
