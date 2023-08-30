@@ -1,6 +1,7 @@
 VENV = .venv
 PYTHON_CMD = python3.11
 APP_NAME ?= baking-test
+QUAY_ORG ?= $(USER)
 
 venv_check:
 ifndef VIRTUAL_ENV
@@ -18,7 +19,7 @@ endif
 setup: venv_check
 	python -m pip install cookiecutter
 	rm -rf baking-test
-	cookiecutter . project_name=$(APP_NAME) --no-input
+	cookiecutter . project_name=$(APP_NAME) quay_org=$(QUAY_ORG) --no-input
 
 test: venv_check setup
 	cd baking-test && make -f Makefile test
