@@ -35,8 +35,7 @@ if isClowderEnabled():
 
     # TODO: refactor into app-common lib
     try:
-        API_PATH = [ x.apiPath for x in cfg.endpoints if x.app == APP_NAME ].pop()
-        API_PATH = API_PATH.lstrip('/')
+        API_PATH = [ x.apiPath for x in cfg.endpoints if x.app == APP_NAME ].pop().lstrip('/')
     except IndexError:
         API_PATH = ""
 
