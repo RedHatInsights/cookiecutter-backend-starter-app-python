@@ -268,6 +268,26 @@ use the NAMESPACE variable to pass the name of the target namespace
 
 The application should deploy to your reserved ephemeral namespace within a few minutes.
 
+**Note**: Requests to the starter app must be authenticated by the crcauth-service first. The easy way to do this is first run:
+```bash
+$ bonfire namespace describe
+```
+You will get an output similar to:
+```
+...
+Current project: ephemeral-48i1in
+Console url: https://console-openshift-console.apps.c-rh-c-eph.8p0c.p1.openshiftapps.com/k8s/cluster/projects/ephemeral-48i1in
+Keycloak admin route: https://env-ephemeral-48i1in-dbky5uxs-auth.apps.c-rh-c-eph.8p0c.p1.openshiftapps.com/auth/
+Keycloak admin login: pcZXR21H | gr09sug6jndjjj8M
+Frontend route: https://env-ephemeral-48i1in-dbky5uxs.apps.c-rh-c-eph.8p0c.p1.openshiftapps.com
+Frontend login: jdoe | LCAO4BtTaFQmoTpc
+```
+Use the Frontend login credentials to get past crcauth. I.e.
+```bash
+$ curl -u jdoe:LCAO4BtTaFQmoTpc https://env-ephemeral-48i1in-dbky5uxs.apps.c-rh-c-eph.8p0c.p1.openshiftapps.com/api/baking-test/
+```
+
+The host name can be found in the route for your service.
 ## Additional Makefile recipes
 
 ### Installing rh-pre-commit
