@@ -22,5 +22,4 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 WORKDIR /app-src
 
-ENTRYPOINT ["python", "manage.py"]
-CMD ["runserver", "0.0.0.0:8000"]
+CMD [ "gunicorn", "-b", "0.0.0.0:8000", "{{cookiecutter.project_name}}.wsgi" ]
