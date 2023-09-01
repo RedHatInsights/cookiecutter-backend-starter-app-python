@@ -23,7 +23,7 @@ objects:
           apiPath: "${APP_NAME}"
       podSpec:
         initContainers:
-          - command: [ "${PYTHON_CMD}", "manage.py migrate" ]
+          - command: [ "${PYTHON_CMD}", "manage.py", "migrate" ]
             inheritEnv: true
             volumeMounts:
               - name: data
