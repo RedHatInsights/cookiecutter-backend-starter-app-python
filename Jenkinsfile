@@ -12,13 +12,15 @@ def secrets = [
 
 def configuration = [vaultUrl: params.VAULT_ADDRESS, vaultCredentialId: params.VAULT_CREDS_ID, engineVersion: 1]
 
+def namespace
+
 pipeline {
     agent { label 'rhel8' }
     options {
         timestamps()
     }
     environment {
-        APP_NAME='backend-starter-app-python'
+        PROJECT_NAME='backend-starter-app-python'
         QUAY_ORG='cloudservices'
     }
     stages {
@@ -33,7 +35,7 @@ pipeline {
 
                         oc login --token=${OC_LOGIN_TOKEN} --server=${OC_LOGIN_SERVER}
                     '''
-                    dir("${APP_NAME}") {
+                    dir("${PROJECT_NAME}") {
                         sh '''
                             make venv_create
                             source .venv/bin/activate
@@ -45,7 +47,7 @@ pipeline {
         }
         stage('Build temporary image') {
             steps {
-                dir("${APP_NAME}") {
+                dir("${PROJECT_NAME}") {
                     withVault([configuration: configuration, vaultSecrets: secrets]) {
                         sh '''
                             source .venv/bin/activate
@@ -59,18 +61,18 @@ pipeline {
         }
         stage('Deploy on Ephemeral') {
             steps {
-                dir("${APP_NAME}") {
+                dir("${PROJECT_NAME}") {
                     script {
-                        NAMESPACE = sh(returnStdout:true, script: '''
+                        namespace = sh(returnStdout:true, script: '''
                             source .venv/bin/activate
                             make bonfire_reserve_namespace
                         ''').trim()
                     }
-                    echo "Namespace reserved:${NAMESPACE}"
+                    echo "Namespace reserved:${namespace}"
                     sh """
                         source .venv/bin/activate
-                        NAMESPACE=${NAMESPACE} make bonfire_deploy
-                        """
+                        NAMESPACE=${namespace} make bonfire_deploy
+                    """
                 }
             }
         }
@@ -78,8 +80,8 @@ pipeline {
     post {
         always {
             script {
-                if (NAMESPACE) {
-                    dir("${APP_NAME}") {
+                if (namespace) {
+                    dir("${PROJECT_NAME}") {
                         echo "Releasing namespace: ${NAMESPACE}"
                         sh """
                             source .venv/bin/activate
