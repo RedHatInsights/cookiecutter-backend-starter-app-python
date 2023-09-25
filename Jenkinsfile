@@ -12,6 +12,8 @@ def secrets = [
 
 def configuration = [vaultUrl: params.VAULT_ADDRESS, vaultCredentialId: params.VAULT_CREDS_ID, engineVersion: 1]
 
+def namespace
+
 pipeline {
     agent { label 'rhel8' }
     options {
@@ -61,16 +63,16 @@ pipeline {
             steps {
                 dir("${PROJECT_NAME}") {
                     script {
-                        NAMESPACE = sh(returnStdout:true, script: '''
+                        namespace = sh(returnStdout:true, script: '''
                             source .venv/bin/activate
                             make bonfire_reserve_namespace
                         ''').trim()
                     }
-                    echo "Namespace reserved:${NAMESPACE}"
+                    echo "Namespace reserved:${namespace}"
                     sh """
                         source .venv/bin/activate
-                        NAMESPACE=${NAMESPACE} make bonfire_deploy
-                        """
+                        NAMESPACE=${namespace} make bonfire_deploy
+                    """
                 }
             }
         }
@@ -78,7 +80,7 @@ pipeline {
     post {
         always {
             script {
-                if (NAMESPACE) {
+                if (namespace) {
                     dir("${PROJECT_NAME}") {
                         echo "Releasing namespace: ${NAMESPACE}"
                         sh """
