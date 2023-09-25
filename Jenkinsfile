@@ -18,7 +18,7 @@ pipeline {
         timestamps()
     }
     environment {
-        APP_NAME='backend-starter-app-python'
+        PROJECT_NAME='backend-starter-app-python'
         QUAY_ORG='cloudservices'
     }
     stages {
@@ -33,7 +33,7 @@ pipeline {
 
                         oc login --token=${OC_LOGIN_TOKEN} --server=${OC_LOGIN_SERVER}
                     '''
-                    dir("${APP_NAME}") {
+                    dir("${PROJECT_NAME}") {
                         sh '''
                             make venv_create
                             source .venv/bin/activate
@@ -45,7 +45,7 @@ pipeline {
         }
         stage('Build temporary image') {
             steps {
-                dir("${APP_NAME}") {
+                dir("${PROJECT_NAME}") {
                     withVault([configuration: configuration, vaultSecrets: secrets]) {
                         sh '''
                             source .venv/bin/activate
@@ -59,7 +59,7 @@ pipeline {
         }
         stage('Deploy on Ephemeral') {
             steps {
-                dir("${APP_NAME}") {
+                dir("${PROJECT_NAME}") {
                     script {
                         NAMESPACE = sh(returnStdout:true, script: '''
                             source .venv/bin/activate
@@ -79,7 +79,7 @@ pipeline {
         always {
             script {
                 if (NAMESPACE) {
-                    dir("${APP_NAME}") {
+                    dir("${PROJECT_NAME}") {
                         echo "Releasing namespace: ${NAMESPACE}"
                         sh """
                             source .venv/bin/activate
