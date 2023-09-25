@@ -19,7 +19,6 @@ pipeline {
     }
     environment {
         APP_NAME='backend-starter-app-python'
-        QUAY_ORG='cloudservices'
     }
     stages {
         stage('Build the PR project template and setup') {
