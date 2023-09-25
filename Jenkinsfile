@@ -11,6 +11,7 @@ def secrets = [
 ]
 
 def configuration = [vaultUrl: params.VAULT_ADDRESS, vaultCredentialId: params.VAULT_CREDS_ID, engineVersion: 1]
+def NAMESPACE
 
 pipeline {
     agent { label 'rhel8' }
@@ -19,7 +20,6 @@ pipeline {
     }
     environment {
         APP_NAME='backend-starter-app-python'
-        QUAY_ORG='cloudservices'
     }
     stages {
         stage('Build the PR project template and setup') {
@@ -28,7 +28,7 @@ pipeline {
                     sh '''
                         make venv_create
                         source .venv/bin/activate
-                        make setup
+                        QUAY_ORG='cloudservices' make setup
                         rm -rf .venv
 
                         oc login --token=${OC_LOGIN_TOKEN} --server=${OC_LOGIN_SERVER}
