@@ -12,6 +12,8 @@ def secrets = [
 
 def configuration = [vaultUrl: params.VAULT_ADDRESS, vaultCredentialId: params.VAULT_CREDS_ID, engineVersion: 1]
 
+def NAMESPACE
+
 pipeline {
     agent { label 'rhel8' }
     options {
@@ -19,27 +21,20 @@ pipeline {
     }
     environment {
         APP_NAME='backend-starter-app-python'
-        QUAY_ORG='cloudservices'
     }
     stages {
         stage('Build the PR project template and setup') {
             steps {
-                withVault([configuration: configuration, vaultSecrets: secrets]) {
+                sh """
+                    python3 -m pip install --user cookiecutter
+                    ~/.local/bin/cookiecutter . project_name=${APP_NAME} --no-input
+                """
+                dir("${APP_NAME}") {
                     sh '''
                         make venv_create
                         source .venv/bin/activate
-                        make setup
-                        rm -rf .venv
-
-                        oc login --token=${OC_LOGIN_TOKEN} --server=${OC_LOGIN_SERVER}
+                        make install_dev
                     '''
-                    dir("${APP_NAME}") {
-                        sh '''
-                            make venv_create
-                            source .venv/bin/activate
-                            make install_dev
-                        '''
-                    }
                 }
             }
         }
@@ -48,7 +43,6 @@ pipeline {
                 dir("${APP_NAME}") {
                     withVault([configuration: configuration, vaultSecrets: secrets]) {
                         sh '''
-                            source .venv/bin/activate
                             make build-image
                             make quay_login
                             make push-image
@@ -60,17 +54,20 @@ pipeline {
         stage('Deploy on Ephemeral') {
             steps {
                 dir("${APP_NAME}") {
-                    script {
-                        NAMESPACE = sh(returnStdout:true, script: '''
+                    withVault([configuration: configuration, vaultSecrets: secrets]) {
+                        script {
+                            NAMESPACE = sh(returnStdout:true, script: '''
+                                make oc_login
+                                source .venv/bin/activate
+                                make bonfire_reserve_namespace
+                            ''').trim()
+                        }
+                        echo "Namespace reserved:${NAMESPACE}"
+                        sh """
                             source .venv/bin/activate
-                            make bonfire_reserve_namespace
-                        ''').trim()
+                            NAMESPACE=${NAMESPACE} make bonfire_deploy
+                            """
                     }
-                    echo "Namespace reserved:${NAMESPACE}"
-                    sh """
-                        source .venv/bin/activate
-                        NAMESPACE=${NAMESPACE} make bonfire_deploy
-                        """
                 }
             }
         }
