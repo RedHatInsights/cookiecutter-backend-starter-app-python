@@ -55,19 +55,19 @@ pipeline {
             steps {
                 dir("${APP_NAME}") {
                     withVault([configuration: configuration, vaultSecrets: secrets]) {
-                        script {
-                            NAMESPACE = sh(returnStdout:true, script: '''
-                                make oc_login
-                                source .venv/bin/activate
-                                make bonfire_reserve_namespace
-                            ''').trim()
-                        }
-                        echo "Namespace reserved:${NAMESPACE}"
-                        sh """
-                            source .venv/bin/activate
-                            NAMESPACE=${NAMESPACE} make bonfire_deploy
-                            """
+                        sh 'make oc_login'
                     }
+                    script {
+                        NAMESPACE = sh(returnStdout:true, script: '''
+                            source .venv/bin/activate
+                            make bonfire_reserve_namespace
+                        ''').trim()
+                    }
+                    echo "Namespace reserved:${NAMESPACE}"
+                    sh """
+                        source .venv/bin/activate
+                        NAMESPACE=${NAMESPACE} make bonfire_deploy
+                    """
                 }
             }
         }
