@@ -124,7 +124,7 @@ bonfire_process:
 		-p service/IMAGE=$(IMAGE) -p service/IMAGE_TAG=$(IMAGE_TAG) -n default
 
 bonfire_reserve_namespace:
-	@bonfire namespace reserve
+	@bonfire namespace reserve -f
 
 bonfire_release_namespace: namespace_check
 	bonfire namespace release $(NAMESPACE) -f
@@ -145,4 +145,4 @@ stop-db:
 	$(CONTAINER_ENGINE) stop $(APP_NAME)-db
 	$(CONTAINER_ENGINE) rm $(APP_NAME)-db
 oc_login:
-	oc login --token=${OC_LOGIN_TOKEN} --server=${OC_LOGIN_SERVER}
+	@oc login --token=${OC_LOGIN_TOKEN} --server=${OC_LOGIN_SERVER}
