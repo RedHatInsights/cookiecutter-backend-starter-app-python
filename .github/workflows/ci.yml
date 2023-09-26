@@ -18,21 +18,24 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: "3.11"
-    - name: create Virtual env
-      run: make venv_create
-    - name: install
+    - name: install cookiecutter
+      run: python3 -m pip install --user cookiecutter
+    - name: Setup git
       run: |
-        source .venv/bin/activate
         git config --global user.email "you@example.com"
         git config --global user.name "Your Name"
-        make setup
+    - name: generate project with project defaults
+      run: cookiecutter . --no-input
+    - name: create Virtual env
+      working-directory: ./baking-test
+      run: python -m venv .venv
     - name: run lint
       working-directory: ./baking-test
       run: |
-        source ../.venv/bin/activate
+        source .venv/bin/activate
         make lint
     - name: run tests
       working-directory: ./baking-test
       run: |
-        source ../.venv/bin/activate
+        source .venv/bin/activate
         make test
