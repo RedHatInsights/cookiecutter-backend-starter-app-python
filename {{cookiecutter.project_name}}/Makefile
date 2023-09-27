@@ -11,7 +11,7 @@ POSTGRESQL_IMAGE=quay.io/cloudservices/postgresql-rds:15-1
 CLOWDAPP_TEMPLATE ?= clowdapp.yaml
 APP_NAME ?= {{cookiecutter.project_name | replace("_", "-")}}
 PYTHON_CMD = python3.11
-QUAY_ORG ?= $(USER)
+QUAY_ORG ?= {{cookiecutter.quay_org}}
 QUAY_REPOSITORY ?= $(APP_NAME)
 IMAGE = quay.io/$(QUAY_ORG)/$(QUAY_REPOSITORY)
 POSTGRESQL_IMAGE = quay.io/cloudservices/postgresql-rds:15-1
@@ -125,7 +125,7 @@ bonfire_process:
 		-p service/IMAGE=$(IMAGE) -p service/IMAGE_TAG=$(IMAGE_TAG) -n default
 
 bonfire_reserve_namespace:
-	@bonfire namespace reserve
+	@bonfire namespace reserve -f
 
 bonfire_release_namespace: namespace_check
 	bonfire namespace release $(NAMESPACE) -f
@@ -145,3 +145,5 @@ start-db:
 stop-db:
 	$(CONTAINER_ENGINE) stop $(APP_NAME)-db
 	$(CONTAINER_ENGINE) rm $(APP_NAME)-db
+oc_login:
+	@oc login --token=${OC_LOGIN_TOKEN} --server=${OC_LOGIN_SERVER}
