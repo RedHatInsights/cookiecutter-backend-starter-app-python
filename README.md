@@ -1,7 +1,5 @@
 # cookiecutter-backend-starter-app-python
 
-A change
-
 Powered by [Cookiecutter](https://cookiecutter.readthedocs.io/en/stable/index.html), this template provides what's necessary to
 jumpstart a new console.redhat.com platform application using [Django REST Framework](https://www.django-rest-framework.org), by
 providing a minimal Django project that is fully integrated with the console.redhat.com platform, to serve as an example for new
