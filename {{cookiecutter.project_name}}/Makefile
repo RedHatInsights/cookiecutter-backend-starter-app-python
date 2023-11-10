@@ -39,7 +39,8 @@ else
 endif
 
 run: venv_check stop-db install start-db migrate
-	${PYTHON_CMD} manage.py runserver
+# ${PYTHON_CMD} manage.py runserver
+	gunicorn {{cookiecutter.project_name}}.wsgi
 
 migrate: venv_check
 	${PYTHON_CMD} manage.py migrate

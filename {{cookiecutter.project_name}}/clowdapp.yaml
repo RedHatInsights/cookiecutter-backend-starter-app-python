@@ -23,8 +23,7 @@ objects:
           apiPath: "${APP_NAME}"
       podSpec:
         initContainers:
-          - args:
-            - "migrate"
+          - command: [ "${PYTHON_CMD}", "manage.py", "migrate" ]
             inheritEnv: true
             volumeMounts:
               - name: data
@@ -81,6 +80,8 @@ parameters:
 - name: WEB_PORT
   description: Port this is running on
   value: "8000"
+- name: PYTHON_CMD
+  value: "python3.11"
 - name: MEMORY_LIMIT_SERVICE
   value: 512Mi
 - name: MEMORY_REQUEST_SERVICE
