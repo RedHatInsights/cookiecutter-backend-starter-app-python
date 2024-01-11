@@ -57,7 +57,7 @@ pipeline {
             steps {
                 dir("${APP_NAME}") {
                     withVault([configuration: configuration, vaultSecrets: secrets]) {
-                        sh 'OC_LOGIN_TOKEN=$OC_LOGIN_TOKEN_DEV OC_LOGIN_SERVER=$OC_LOGIN_SERVER_DEV make oc_login'
+                        sh 'make oc_login'
                     }
                     script {
                         NAMESPACE = sh(returnStdout:true, script: '''
