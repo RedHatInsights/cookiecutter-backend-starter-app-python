@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: cookiecutter-backend-starter-app-python
+  annotations:
+    github.com/project-slug: RedHatInsights/cookiecutter-backend-starter-app-python
+spec:
+  type: other
+  lifecycle: stage
+  owner: my-group
