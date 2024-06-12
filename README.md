@@ -16,6 +16,7 @@ To install cookiecutter you can simply run:
 python3 -m pip install --user cookiecutter
 ```
 
+
 Once installed, you can generate your new project. You'll be asked the repo name, quay org name and whether to initialize a git
 repository or not.
 
