@@ -10,6 +10,7 @@ dependencies = [
     "django-prometheus",
     "python-json-logger",
     "psycopg",
+    "gunicorn",
 ]
 
 [project.optional-dependencies]
