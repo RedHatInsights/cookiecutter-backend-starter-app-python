@@ -10,7 +10,7 @@ BONFIRE_CONFIG = .bonfirecfg.yaml
 POSTGRESQL_IMAGE=quay.io/cloudservices/postgresql-rds:15
 CLOWDAPP_TEMPLATE ?= clowdapp.yaml
 APP_NAME ?= {{cookiecutter.project_name | replace("_", "-")}}
-PYTHON_CMD = python3.11
+PYTHON_CMD = python3
 QUAY_ORG ?= {{cookiecutter.quay_org}}
 QUAY_REPOSITORY ?= $(APP_NAME)
 IMAGE = quay.io/$(QUAY_ORG)/$(QUAY_REPOSITORY)
@@ -47,7 +47,7 @@ install_pre_commit: venv_check
 	# Remove any outdated tools
 	rm -rf $(TEMPDIR_INFOSECTOOLS)
 	# Clone up-to-date tools
-	git clone https://gitlab.corp.redhat.com/infosec-public/developer-workbench/tools.git /tmp/infosec-dev-tools
+	git clone https://gitlab.cee.redhat.com/infosec-public/developer-workbench/tools.git /tmp/infosec-dev-tools
 
 	# Cleanup installed old tools
 	$(TEMPDIR_INFOSECTOOLS)/scripts/uninstall-legacy-tools
