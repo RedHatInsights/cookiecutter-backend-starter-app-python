@@ -293,7 +293,7 @@ The host name can be found in the route for your service.
 ### Installing rh-pre-commit
 
 We've added a recipe to install the
-[rh-pre-commit](https://gitlab.corp.redhat.com/infosec-public/developer-workbench/tools/-/tree/main/rh-pre-commit) to this
+[rh-pre-commit](https://gitlab.cee.redhat.com/infosec-public/developer-workbench/tools/-/tree/main/rh-pre-commit) to this
 repository. This will prevent you from accidentally committing credentials, tokens, or other secrets to your repo. To install
 the pre-commit run:
 

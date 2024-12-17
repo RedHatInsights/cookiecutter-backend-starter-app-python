@@ -47,7 +47,7 @@ install_pre_commit: venv_check
 	# Remove any outdated tools
 	rm -rf $(TEMPDIR_INFOSECTOOLS)
 	# Clone up-to-date tools
-	git clone https://gitlab.corp.redhat.com/infosec-public/developer-workbench/tools.git /tmp/infosec-dev-tools
+	git clone https://gitlab.cee.redhat.com/infosec-public/developer-workbench/tools.git /tmp/infosec-dev-tools
 
 	# Cleanup installed old tools
 	$(TEMPDIR_INFOSECTOOLS)/scripts/uninstall-legacy-tools
