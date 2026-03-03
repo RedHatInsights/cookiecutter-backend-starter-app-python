@@ -7,14 +7,13 @@ HOST_WEBPORT=$(CONTAINER_WEBPORT)
 CONTEXT = .
 CONTAINER_ENGINE = podman
 BONFIRE_CONFIG = .bonfirecfg.yaml
-POSTGRESQL_IMAGE=quay.io/cloudservices/postgresql-rds:15-1
+POSTGRESQL_IMAGE=quay.io/cloudservices/postgresql-rds:15
 CLOWDAPP_TEMPLATE ?= clowdapp.yaml
 APP_NAME ?= {{cookiecutter.project_name | replace("_", "-")}}
 PYTHON_CMD = python3.11
 QUAY_ORG ?= {{cookiecutter.quay_org}}
 QUAY_REPOSITORY ?= $(APP_NAME)
 IMAGE = quay.io/$(QUAY_ORG)/$(QUAY_REPOSITORY)
-POSTGRESQL_IMAGE = quay.io/cloudservices/postgresql-rds:15-1
 export ACG_CONFIG = cdappconfig.json
 
 # Determine the container engine
