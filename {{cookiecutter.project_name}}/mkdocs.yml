@@ -1,0 +1,8 @@
+site_name: {{cookiecutter.project_name}}
+site_description: Description
+
+nav:
+  - Introduction: README.md
+
+plugins:
+  - techdocs-core
